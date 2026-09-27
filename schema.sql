@@ -18,3 +18,14 @@ CREATE TABLE IF NOT EXISTS tentativas_login (
   criado_em  DATETIME NOT NULL,
   INDEX idx_ip_data (ip, criado_em)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS redefinicoes_senha (
+  id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  usuario_id  INT UNSIGNED NOT NULL,
+  token_hash  CHAR(64) NOT NULL UNIQUE,
+  expira_em   DATETIME NOT NULL,
+  usado_em    DATETIME NULL,
+  criado_em   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_usuario (usuario_id),
+  CONSTRAINT fk_redef_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

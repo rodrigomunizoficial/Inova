@@ -11,6 +11,10 @@ RewriteRule ^login/?$ index.html [L]
 # /api/verificar-email → api/verificar-email.php
 RewriteRule ^api/verificar-email/?$ api/verificar-email.php [L]
 
+# Recuperação de senha
+RewriteRule ^esqueci-senha/?$ esqueci-senha.php [L,QSA]
+RewriteRule ^redefinir-senha/?$ redefinir-senha.php [L,QSA]
+
 # Bloqueia acesso direto a arquivos internos
 RewriteRule ^inc/ - [F,L]
 RewriteRule ^(schema\.sql|criar-usuario\.php|README\.md)$ - [F,L]

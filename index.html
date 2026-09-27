@@ -269,6 +269,8 @@
     background: rgba(255, 107, 138, .08); border: 1px solid rgba(255, 107, 138, .28); color: #ffc2cf; font-size: 13.5px; line-height: 1.45;
   }
   .alert.show { display: flex; animation: shake .4s; }
+  .alert.ok { background: rgba(46, 230, 184, .08); border-color: rgba(46, 230, 184, .3); color: #b6f7e4; }
+  .alert.ok.show { animation: fadeUp .4s ease both; }
   @keyframes shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
 
   .divider {
@@ -498,7 +500,7 @@
               <span class="box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg></span>
               Lembrar de mim
             </label>
-            <a class="link" href="/esqueci-senha">Esqueci a senha</a>
+            <a class="link" href="/esqueci-senha" id="forgot">Esqueci a senha</a>
           </div>
         </div>
 
@@ -573,7 +575,7 @@
       title.classList.remove('swap-in'); void title.offsetWidth; title.classList.add('swap-in');
       title.textContent = t; subtitle.textContent = s;
     }
-    function showAlert(html) { alertText.innerHTML = html; alertBox.classList.remove('show'); void alertBox.offsetWidth; alertBox.classList.add('show'); }
+    function showAlert(html, ok) { alertBox.classList.toggle('ok', !!ok); alertText.innerHTML = html; alertBox.classList.remove('show'); void alertBox.offsetWidth; alertBox.classList.add('show'); }
     function hideAlert() { alertBox.classList.remove('show'); }
     function busy(on, label) { btn.classList.toggle('loading', on); if (label) btnBusy.textContent = label; }
     function esc(s) { return s.replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); }
@@ -640,6 +642,7 @@
         $('avatar').textContent = initials(nome || addr);
         $('whoName').textContent = nome || addr.split('@')[0];
         $('whoEmail').textContent = addr;
+        $('forgot').href = '/esqueci-senha?email=' + encodeURIComponent(addr);
         setText((nome ? 'Que bom te ver, ' + firstName(nome) + '!' : 'Encontramos sua conta!'),
                 'Agora é só informar sua senha para entrar.');
         btnIdle.textContent = 'Entrar';
@@ -725,6 +728,18 @@
       bloqueado: 'Muitas tentativas seguidas. Aguarde alguns minutos e tente novamente.',
       sessao: 'Sua sessão expirou. Informe a senha novamente.'
     };
+    if (q.get('ok') === 'senha') {
+      var emOk = q.get('email');
+      history.replaceState(null, '', location.pathname);
+      var okMsg = 'Senha alterada com sucesso! Agora é só entrar com a nova senha.';
+      if (emOk) {
+        email.value = emOk;
+        lookup(emOk).then(function (r) {
+          if (r && r.encontrado) goStep2(emOk, r.nome);
+          setTimeout(function () { showAlert(okMsg, true); }, 260);
+        }, function () { showAlert(okMsg, true); });
+      } else { showAlert(okMsg, true); }
+    }
     if (q.get('erro')) {
       var em = q.get('email'), msg = ERROS[q.get('erro')] || ERROS.senha;
       history.replaceState(null, '', location.pathname);
