@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
   nome          VARCHAR(120) NOT NULL,
   email         VARCHAR(190) NOT NULL UNIQUE,
   senha_hash    VARCHAR(255) NOT NULL,
-  perfil        ENUM('Administrador','Médico','Enfermagem','Recepção') NOT NULL DEFAULT 'Recepção',
+  perfil        ENUM('Administrador','Engenharia','Técnico','Solicitante') NOT NULL DEFAULT 'Solicitante',
   ativo         TINYINT(1) NOT NULL DEFAULT 1,
   ultimo_login  DATETIME NULL,
   criado_em     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP

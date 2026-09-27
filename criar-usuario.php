@@ -8,9 +8,9 @@ if (PHP_SAPI !== 'cli') {
 require __DIR__ . '/inc/bootstrap.php';
 
 [$_, $nome, $email, $senha, $perfil] = array_pad($argv, 5, null);
-$perfil = $perfil ?: 'Recepção';
+$perfil = $perfil ?: 'Solicitante';
 if (!$nome || !filter_var($email, FILTER_VALIDATE_EMAIL) || !$senha) {
-    fwrite(STDERR, "Uso: php criar-usuario.php \"Nome\" email senha [Administrador|Médico|Enfermagem|Recepção]\n");
+    fwrite(STDERR, "Uso: php criar-usuario.php \"Nome\" email senha [Administrador|Engenharia|Técnico|Solicitante]\n");
     exit(1);
 }
 $email = mb_strtolower(trim($email));
