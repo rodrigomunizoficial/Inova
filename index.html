@@ -1,0 +1,757 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entrar · InovaSaúde</title>
+<meta name="description" content="InovaSaúde — sistema de Engenharia Clínica: gestão de equipamentos médico-hospitalares.">
+<meta name="theme-color" content="#0b0b1a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #07071a;
+    --bg-2: #0d0d24;
+    --card: rgba(20, 20, 44, .62);
+    --card-border: rgba(255, 255, 255, .08);
+    --field: rgba(255, 255, 255, .04);
+    --field-border: rgba(255, 255, 255, .10);
+    --field-focus: #7c6cff;
+    --text: #f4f4fb;
+    --muted: #9a9ab8;
+    --faint: #6b6b8a;
+    --indigo: #6c5cff;
+    --violet: #8b5cf6;
+    --cyan: #3fd4f0;
+    --teal: #2ee6b8;
+    --danger: #ff6b8a;
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ---------- Fundo animado ---------- */
+  .backdrop { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  .blob {
+    position: absolute; border-radius: 50%; filter: blur(90px); opacity: .55;
+    animation: float 18s ease-in-out infinite;
+  }
+  .blob.b1 { width: 560px; height: 560px; background: #4b3bff; top: -180px; left: -140px; }
+  .blob.b2 { width: 480px; height: 480px; background: #0fb5d6; bottom: -200px; right: -120px; animation-delay: -6s; opacity: .35; }
+  .blob.b3 { width: 360px; height: 360px; background: #9b4dff; top: 40%; left: 45%; animation-delay: -12s; opacity: .25; }
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(40px, -30px) scale(1.06); }
+    66% { transform: translate(-30px, 30px) scale(.96); }
+  }
+  .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+  }
+
+  /* ---------- Layout ---------- */
+  .shell {
+    position: relative; z-index: 1;
+    min-height: 100vh; min-height: 100dvh;
+    display: grid; grid-template-columns: 1.1fr 1fr;
+  }
+
+  /* ---------- Painel da marca ---------- */
+  .showcase {
+    position: relative;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 56px 64px;
+  }
+  .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; color: inherit; }
+  .brand svg { flex: none; filter: drop-shadow(0 10px 24px rgba(108, 92, 255, .45)); }
+  .brand-name { font-weight: 800; font-size: 22px; letter-spacing: .02em; line-height: 1; }
+  .brand-name span {
+    background: linear-gradient(90deg, var(--cyan), var(--teal));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .brand-tag {
+    display: block; margin-top: 6px; font-size: 13px; font-weight: 600;
+    background: linear-gradient(90deg, #a5b4ff, #c4a8ff);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  .hero { max-width: 560px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 7px 14px 7px 10px; border-radius: 999px;
+    background: rgba(63, 212, 240, .08); border: 1px solid rgba(63, 212, 240, .22);
+    color: #9deaf8; font-size: 12.5px; font-weight: 600; letter-spacing: .02em;
+  }
+  .pill .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--teal);
+    box-shadow: 0 0 0 0 rgba(46, 230, 184, .7); animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(46, 230, 184, .6); }
+    70% { box-shadow: 0 0 0 10px rgba(46, 230, 184, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(46, 230, 184, 0); }
+  }
+  .hero h1 {
+    margin-top: 22px; font-size: clamp(32px, 3.2vw, 46px); line-height: 1.08;
+    font-weight: 800; letter-spacing: -.03em;
+  }
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(100deg, #8f83ff 0%, var(--cyan) 60%, var(--teal) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero p { margin-top: 18px; color: var(--muted); font-size: 16.5px; line-height: 1.65; max-width: 460px; }
+
+  .ecg { margin-top: 36px; width: 100%; max-width: 480px; height: 70px; }
+  .ecg path {
+    fill: none; stroke: url(#ecgGrad); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
+    stroke-dasharray: 900; stroke-dashoffset: 900; animation: draw 3.2s ease-in-out infinite;
+    filter: drop-shadow(0 0 6px rgba(63, 212, 240, .6));
+  }
+  @keyframes draw {
+    0% { stroke-dashoffset: 900; opacity: 0; }
+    10% { opacity: 1; }
+    70% { stroke-dashoffset: 0; opacity: 1; }
+    100% { stroke-dashoffset: 0; opacity: 0; }
+  }
+
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 36px; max-width: 540px; }
+  .feature {
+    padding: 16px; border-radius: 14px;
+    background: rgba(255, 255, 255, .03); border: 1px solid rgba(255, 255, 255, .06);
+    backdrop-filter: blur(6px);
+  }
+  .feature .ic {
+    width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
+    background: linear-gradient(135deg, rgba(108, 92, 255, .25), rgba(63, 212, 240, .18));
+    color: #b9b2ff; margin-bottom: 12px;
+  }
+  .feature strong { display: block; font-size: 14px; font-weight: 700; }
+  .feature small { display: block; margin-top: 4px; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+
+  .showcase footer { color: var(--faint); font-size: 12.5px; }
+
+  /* ---------- Painel do formulário ---------- */
+  .panel { display: flex; align-items: center; justify-content: center; padding: 40px 32px; }
+  .card {
+    position: relative; width: 100%; max-width: 440px;
+    padding: 44px 40px 32px;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 28px;
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    box-shadow:
+      0 30px 80px -20px rgba(0, 0, 0, .65),
+      inset 0 1px 0 rgba(255, 255, 255, .06);
+    animation: rise .7s cubic-bezier(.2, .8, .2, 1) both;
+  }
+  .card::before {
+    content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px;
+    background: linear-gradient(140deg, rgba(124, 108, 255, .7), transparent 35%, transparent 65%, rgba(63, 212, 240, .5));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none;
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px) scale(.985); } to { opacity: 1; transform: none; } }
+
+  .card .brand.mobile { display: none; justify-content: center; margin-bottom: 28px; }
+
+  .card h2 { font-size: 28px; font-weight: 800; letter-spacing: -.02em; }
+  .card .sub { margin-top: 8px; color: var(--muted); font-size: 15px; }
+
+  form { margin-top: 30px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .field label {
+    display: block; margin-bottom: 8px;
+    font-size: 13px; font-weight: 600; color: #c9c9e0;
+  }
+  .control { position: relative; }
+  .control .lead {
+    position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+    color: var(--faint); transition: color .2s; pointer-events: none;
+  }
+  .control input {
+    width: 100%; height: 54px;
+    padding: 0 48px 0 46px;
+    font: inherit; font-size: 15px; color: var(--text);
+    background: var(--field); border: 1px solid var(--field-border); border-radius: 14px;
+    outline: none; transition: border-color .2s, box-shadow .2s, background .2s;
+  }
+  .control input::placeholder { color: #5c5c7a; }
+  .control input:hover { border-color: rgba(255, 255, 255, .18); }
+  .control input:focus {
+    border-color: var(--field-focus); background: rgba(124, 108, 255, .06);
+    box-shadow: 0 0 0 4px rgba(124, 108, 255, .18);
+  }
+  .control:focus-within .lead { color: #a99fff; }
+  .control input:-webkit-autofill {
+    -webkit-text-fill-color: var(--text);
+    -webkit-box-shadow: 0 0 0 100px #1a1a36 inset;
+    caret-color: var(--text);
+  }
+  .field.invalid input { border-color: var(--danger); box-shadow: 0 0 0 4px rgba(255, 107, 138, .14); }
+  .field .err { display: none; margin-top: 7px; font-size: 12.5px; color: var(--danger); }
+  .field.invalid .err { display: block; }
+  .field.notfound input { border-color: var(--danger); box-shadow: 0 0 0 4px rgba(255, 107, 138, .14); }
+
+  .toggle {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    width: 38px; height: 38px; border-radius: 10px; border: 0; background: transparent;
+    color: var(--faint); cursor: pointer; display: grid; place-items: center; transition: color .2s, background .2s;
+  }
+  .toggle:hover { color: var(--text); background: rgba(255, 255, 255, .06); }
+  .toggle .off { display: none; }
+  .toggle[aria-pressed="true"] .on { display: none; }
+  .toggle[aria-pressed="true"] .off { display: block; }
+
+  .caps { display: none; margin-top: 7px; font-size: 12.5px; color: #ffc46b; align-items: center; gap: 6px; }
+  .caps.show { display: flex; }
+
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: -2px; }
+  .check { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; color: #c9c9e0; user-select: none; }
+  .check input { position: absolute; opacity: 0; pointer-events: none; }
+  .check .box {
+    width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid rgba(255, 255, 255, .22);
+    display: grid; place-items: center; transition: all .2s;
+  }
+  .check .box svg { opacity: 0; transform: scale(.6); transition: all .2s; }
+  .check input:checked + .box { background: linear-gradient(135deg, var(--indigo), var(--violet)); border-color: transparent; }
+  .check input:checked + .box svg { opacity: 1; transform: none; }
+  .check input:focus-visible + .box { box-shadow: 0 0 0 4px rgba(124, 108, 255, .3); }
+  .link { color: #a99fff; font-size: 14px; font-weight: 600; text-decoration: none; transition: color .2s; }
+  .link:hover { color: #cfc9ff; text-decoration: underline; text-underline-offset: 3px; }
+
+  .submit {
+    position: relative; overflow: hidden; margin-top: 6px;
+    height: 56px; border: 0; border-radius: 14px; cursor: pointer;
+    font: inherit; font-size: 16px; font-weight: 700; color: #fff; letter-spacing: .01em;
+    background: linear-gradient(100deg, #6c5cff 0%, #7b5cff 45%, #3aa8f0 100%);
+    background-size: 160% 100%; background-position: 0 0;
+    box-shadow: 0 14px 34px -10px rgba(108, 92, 255, .75), inset 0 1px 0 rgba(255, 255, 255, .2);
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: transform .15s, box-shadow .25s, background-position .5s;
+  }
+  .submit:hover { background-position: 100% 0; box-shadow: 0 18px 40px -10px rgba(63, 168, 240, .7), inset 0 1px 0 rgba(255, 255, 255, .25); }
+  .submit:active { transform: translateY(1px) scale(.995); }
+  .submit:focus-visible { outline: none; box-shadow: 0 0 0 4px rgba(124, 108, 255, .4); }
+  .submit::after {
+    content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .28), transparent);
+    transform: skewX(-20deg); transition: left .7s;
+  }
+  .submit:hover::after { left: 130%; }
+  .submit .arrow { transition: transform .25s; }
+  .submit:hover .arrow { transform: translateX(4px); }
+  .submit .spinner { display: none; width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid rgba(255,255,255,.35); border-top-color: #fff; animation: spin .7s linear infinite; }
+  .submit.loading { pointer-events: none; }
+  .submit.loading .spinner { display: block; }
+  .submit.loading .arrow, .submit.loading .label-idle { display: none; }
+  .submit .label-busy { display: none; }
+  .submit.loading .label-busy { display: inline; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .alert {
+    display: none; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 12px;
+    background: rgba(255, 107, 138, .08); border: 1px solid rgba(255, 107, 138, .28); color: #ffc2cf; font-size: 13.5px; line-height: 1.45;
+  }
+  .alert.show { display: flex; animation: shake .4s; }
+  .alert.ok { background: rgba(46, 230, 184, .08); border-color: rgba(46, 230, 184, .3); color: #b6f7e4; }
+  .alert.ok.show { animation: fadeUp .4s ease both; }
+  @keyframes shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+
+  .divider {
+    display: flex; align-items: center; gap: 14px; margin: 30px 0 18px;
+    color: var(--faint); font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+  }
+  .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent); }
+
+  .roles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .role {
+    display: flex; align-items: center; gap: 10px; min-width: 0;
+    padding: 10px 12px; border-radius: 14px;
+    background: rgba(255, 255, 255, .025); border: 1px solid rgba(255, 255, 255, .06);
+    color: var(--muted); font-size: 13px; font-weight: 600;
+    transition: all .2s;
+  }
+  .role:hover { color: var(--text); border-color: rgba(124, 108, 255, .4); background: rgba(124, 108, 255, .08); transform: translateY(-2px); }
+  .role .ic { flex: none; width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; }
+  .role:nth-child(1) .ic { background: rgba(108, 92, 255, .16); color: #a99fff; }
+  .role:nth-child(2) .ic { background: rgba(63, 212, 240, .14); color: #7fe3f7; }
+  .role:nth-child(3) .ic { background: rgba(46, 230, 184, .14); color: #6ff0cc; }
+  .role:nth-child(4) .ic { background: rgba(255, 170, 90, .14); color: #ffc58f; }
+
+  .secure { margin-top: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--faint); font-size: 12.5px; }
+
+  /* ---------- Etapas ---------- */
+  .step { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; gap: 18px; animation: stepIn .35s cubic-bezier(.2,.8,.2,1) both; }
+  .step[hidden] { display: none; }
+  .step.leaving { animation: stepOut .22s ease both; }
+  @keyframes stepIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
+  @keyframes stepOut { to { opacity: 0; transform: translateX(-16px); } }
+  .swap-in { animation: fadeUp .4s ease both; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .who {
+    display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 12px;
+    border-radius: 14px; background: rgba(124, 108, 255, .08); border: 1px solid rgba(124, 108, 255, .22);
+  }
+  .avatar {
+    flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+    font-weight: 800; font-size: 14px; color: #fff; letter-spacing: .02em;
+    background: linear-gradient(135deg, var(--indigo), var(--cyan));
+    box-shadow: 0 6px 16px -6px rgba(108, 92, 255, .8);
+  }
+  .who-info { min-width: 0; flex: 1; }
+  .who-info strong { display: block; font-size: 14.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .who-info small { display: block; margin-top: 2px; font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .swap {
+    flex: none; border: 0; background: rgba(255,255,255,.06); color: #cfc9ff; font: inherit; font-size: 12.5px; font-weight: 600;
+    padding: 8px 12px; border-radius: 10px; cursor: pointer; transition: background .2s;
+  }
+  .swap:hover { background: rgba(255,255,255,.12); }
+
+  .suggest {
+    display: none; margin-top: 8px; border: 0; background: none; padding: 0; cursor: pointer;
+    font: inherit; font-size: 13px; color: #9deaf8; text-align: left;
+  }
+  .suggest.show { display: block; }
+  .suggest b { text-decoration: underline; text-underline-offset: 3px; }
+  .demo { margin-top: -4px; text-align: center; font-size: 12px; color: var(--faint); }
+  .demo b { color: var(--muted); font-weight: 600; }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* ---------- Responsivo ---------- */
+  @media (max-width: 1080px) {
+    .showcase { padding: 44px 40px; }
+    .features { grid-template-columns: 1fr; max-width: 360px; }
+  }
+  @media (max-width: 880px) {
+    .shell { grid-template-columns: 1fr; }
+    .showcase { display: none; }
+    .card .brand.mobile { display: flex; }
+    .panel { padding: 32px 16px; }
+  }
+  @media (max-width: 420px) {
+    .card { padding: 34px 22px 26px; border-radius: 22px; }
+    .card h2 { font-size: 25px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .ecg path { stroke-dashoffset: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="backdrop" aria-hidden="true">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <div class="grid"></div>
+</div>
+
+<!-- Logo reutilizável -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="logoBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7b6bff"/>
+      <stop offset=".55" stop-color="#5b4bff"/>
+      <stop offset="1" stop-color="#2fb8e8"/>
+    </linearGradient>
+    <linearGradient id="ecgGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#6c5cff" stop-opacity="0"/>
+      <stop offset=".25" stop-color="#8f83ff"/>
+      <stop offset=".7" stop-color="#3fd4f0"/>
+      <stop offset="1" stop-color="#2ee6b8" stop-opacity="0"/>
+    </linearGradient>
+    <symbol id="logo" viewBox="0 0 56 56">
+      <rect width="56" height="56" rx="15" fill="url(#logoBg)"/>
+      <rect x=".5" y=".5" width="55" height="55" rx="14.5" fill="none" stroke="#fff" stroke-opacity=".22"/>
+      <path d="M22 12h12a2 2 0 0 1 2 2v8h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8v8a2 2 0 0 1-2 2H22a2 2 0 0 1-2-2v-8h-8a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h8v-8a2 2 0 0 1 2-2z" fill="#fff"/>
+      <path d="M6 40h8l3-6 4 11 3-5h26" fill="none" stroke="#9ff0ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="45" cy="11" r="2.2" fill="#c8f6ff"/>
+    </symbol>
+  </defs>
+</svg>
+
+<main class="shell">
+
+  <!-- Painel institucional -->
+  <section class="showcase" aria-label="InovaSaúde">
+    <a class="brand" href="/" aria-label="InovaSaúde — página inicial">
+      <svg width="52" height="52"><use href="#logo"/></svg>
+      <div>
+        <div class="brand-name">INOVA<span>SAÚDE</span></div>
+        <span class="brand-tag">tecnologia a serviço da vida</span>
+      </div>
+    </a>
+
+    <div class="hero">
+      <span class="pill"><span class="dot"></span> Engenharia Clínica · online e segura</span>
+      <h1>Equipamentos médicos <em>seguros, disponíveis</em> e sob controle.</h1>
+      <p>Inventário, ordens de serviço, manutenções preventivas e calibrações em um só lugar — com rastreabilidade de cada equipamento e conformidade com a RDC 509/2021 da Anvisa.</p>
+
+      <svg class="ecg" viewBox="0 0 480 70" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 40 H120 L135 40 L145 22 L158 58 L172 8 L186 62 L198 40 H260 L272 30 L284 40 H340 L352 40 L360 26 L372 54 L384 16 L396 40 H480"/>
+      </svg>
+
+      <div class="features">
+        <div class="feature">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></svg></div>
+          <strong>Manutenção preventiva</strong>
+          <small>Planos, calibrações e testes de segurança em dia.</small>
+        </div>
+        <div class="feature">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="m9 14 2 2 4-4"/></svg></div>
+          <strong>Ordens de serviço</strong>
+          <small>Chamados abertos, acompanhados e encerrados.</small>
+        </div>
+        <div class="feature">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></div>
+          <strong>Indicadores</strong>
+          <small>MTBF, MTTR e disponibilidade do parque.</small>
+        </div>
+      </div>
+    </div>
+
+    <footer>© <span id="year">2026</span> InovaSaúde · Todos os direitos reservados</footer>
+  </section>
+
+  <!-- Formulário -->
+  <section class="panel">
+    <div class="card">
+      <a class="brand mobile" href="/" aria-label="InovaSaúde — página inicial">
+        <svg width="48" height="48"><use href="#logo"/></svg>
+        <div>
+          <div class="brand-name">INOVA<span>SAÚDE</span></div>
+          <span class="brand-tag">tecnologia a serviço da vida</span>
+        </div>
+      </a>
+
+      <h2 id="title">Olá! 👋</h2>
+      <p class="sub" id="subtitle">Qual é o seu e-mail de acesso?</p>
+
+      <form id="loginForm" method="post" action="/login" novalidate>
+        <input type="hidden" name="_csrf" id="csrf">
+        <div class="alert" id="alert" role="alert">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          <span id="alertText"></span>
+        </div>
+
+        <!-- Etapa 1: e-mail -->
+        <div class="step" id="step1">
+          <div class="field" id="fEmail">
+            <label for="email">E-mail</label>
+            <div class="control">
+              <svg class="lead" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m22 7-10 6L2 7"/></svg>
+              <input id="email" name="email" type="email" inputmode="email" autocomplete="username" placeholder="seu@email.com.br" required autofocus>
+            </div>
+            <span class="err">Hmm, esse e-mail não parece completo. Confere pra mim?</span>
+            <button type="button" class="suggest" id="suggest"></button>
+          </div>
+        </div>
+
+        <!-- Etapa 2: senha -->
+        <div class="step" id="step2" hidden>
+          <div class="who">
+            <span class="avatar" id="avatar">A</span>
+            <span class="who-info">
+              <strong id="whoName">Usuário</strong>
+              <small id="whoEmail">email</small>
+            </span>
+            <button type="button" class="swap" id="swap">Trocar</button>
+          </div>
+
+          <div class="field" id="fPass">
+            <label for="password">Senha</label>
+            <div class="control">
+              <svg class="lead" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+              <input id="password" name="password" type="password" autocomplete="current-password" placeholder="••••••••" required>
+              <button type="button" class="toggle" id="togglePass" aria-label="Mostrar senha" aria-pressed="false">
+                <svg class="on" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="off" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.9 17.9A10.4 10.4 0 0 1 12 19c-6.5 0-10-7-10-7a18.5 18.5 0 0 1 5.1-5.9M9.9 5.2A9.1 9.1 0 0 1 12 5c6.5 0 10 7 10 7a18.6 18.6 0 0 1-2.2 3.2M14.1 14.1a3 3 0 1 1-4.2-4.2M2 2l20 20"/></svg>
+              </button>
+            </div>
+            <span class="err">Digite sua senha para continuar.</span>
+            <span class="caps" id="caps">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 8 9h-5v6H9v-6H4z"/></svg>
+              Caps Lock está ativado
+            </span>
+          </div>
+
+          <div class="row">
+            <label class="check">
+              <input type="checkbox" name="remember" id="remember">
+              <span class="box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg></span>
+              Lembrar de mim
+            </label>
+            <a class="link" href="/esqueci-senha" id="forgot">Esqueci a senha</a>
+          </div>
+        </div>
+
+        <button type="submit" class="submit" id="submitBtn">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="label-idle" id="btnIdle">Continuar</span>
+          <span class="label-busy" id="btnBusy">Procurando sua conta…</span>
+          <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <p class="demo" id="demoNote" hidden>Modo demonstração — teste com <b>admin@inovasaude.com.br</b></p>
+      </form>
+
+      <div class="divider">Perfis do sistema</div>
+      <div class="roles">
+        <div class="role">
+          <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+          Administrador
+        </div>
+        <div class="role">
+          <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
+          Engenharia
+        </div>
+        <div class="role">
+          <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></svg></span>
+          Técnico
+        </div>
+        <div class="role">
+          <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+          Solicitante
+        </div>
+      </div>
+
+      <div class="secure">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        Conexão segura · seus dados estão protegidos
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  (function () {
+    // ===== Configuração =====
+    // Endpoint que verifica se o e-mail existe.
+    // Recebe POST JSON { email } e deve responder { encontrado: true|false, nome: "Fulano de Tal" }.
+    var CHECK_URL = '/api/verificar-email';
+    // Usuários de exemplo usados só no modo demonstração (arquivo aberto localmente ou endpoint ausente).
+    var DEMO_USERS = { 'admin@inovasaude.com.br': 'Administrador InovaSaúde' };
+
+    var $ = function (id) { return document.getElementById(id); };
+    var form = $('loginForm'), email = $('email'), pass = $('password');
+    var fEmail = $('fEmail'), fPass = $('fPass');
+    var step1 = $('step1'), step2 = $('step2');
+    var title = $('title'), subtitle = $('subtitle');
+    var btn = $('submitBtn'), btnIdle = $('btnIdle'), btnBusy = $('btnBusy');
+    var alertBox = $('alert'), alertText = $('alertText'), suggest = $('suggest');
+    var toggle = $('togglePass'), caps = $('caps');
+    var step = 1, demo = !/^https?:$/.test(location.protocol) || /[?&]demo/.test(location.search);
+
+    $('year').textContent = new Date().getFullYear();
+
+    function greeting() {
+      var h = new Date().getHours();
+      return h < 5 ? 'Boa noite' : h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
+    }
+    function firstName(n) { return (n || '').trim().split(/\s+/)[0] || ''; }
+    function initials(n) {
+      var p = (n || '?').trim().split(/\s+/);
+      return ((p[0] || '')[0] + (p.length > 1 ? p[p.length - 1][0] : '')).toUpperCase();
+    }
+    function setText(t, s) {
+      title.classList.remove('swap-in'); void title.offsetWidth; title.classList.add('swap-in');
+      title.textContent = t; subtitle.textContent = s;
+    }
+    function showAlert(html, ok) { alertBox.classList.toggle('ok', !!ok); alertText.innerHTML = html; alertBox.classList.remove('show'); void alertBox.offsetWidth; alertBox.classList.add('show'); }
+    function hideAlert() { alertBox.classList.remove('show'); }
+    function busy(on, label) { btn.classList.toggle('loading', on); if (label) btnBusy.textContent = label; }
+    function esc(s) { return s.replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); }
+    function validEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }
+
+    // Sugestão para domínios digitados errado (gmial.com → gmail.com)
+    var DOMAINS = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com.br', 'icloud.com', 'live.com', 'uol.com.br', 'bol.com.br', 'inovasaude.com.br'];
+    function lev(a, b) {
+      var d = [], i, j;
+      for (i = 0; i <= a.length; i++) d[i] = [i];
+      for (j = 0; j <= b.length; j++) d[0][j] = j;
+      for (i = 1; i <= a.length; i++) for (j = 1; j <= b.length; j++)
+        d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + (a[i-1] === b[j-1] ? 0 : 1));
+      return d[a.length][b.length];
+    }
+    function suggestion(v) {
+      var at = v.lastIndexOf('@'); if (at < 1) return null;
+      var dom = v.slice(at + 1).toLowerCase(); if (!dom || DOMAINS.indexOf(dom) > -1) return null;
+      var best = null, bd = 3;
+      DOMAINS.forEach(function (d) { var x = lev(dom, d); if (x < bd) { bd = x; best = d; } });
+      return best ? v.slice(0, at + 1) + best : null;
+    }
+    function updateSuggest() {
+      var s = suggestion(email.value.trim());
+      suggest.classList.toggle('show', !!s);
+      if (s) { suggest.dataset.value = s; suggest.innerHTML = 'Você quis dizer <b>' + esc(s) + '</b>?'; }
+    }
+    suggest.addEventListener('click', function () {
+      email.value = suggest.dataset.value; suggest.classList.remove('show'); email.focus();
+    });
+
+    function lookup(addr) {
+      if (demo) return fakeLookup(addr);
+      return fetch(CHECK_URL, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        credentials: 'same-origin', body: JSON.stringify({ email: addr })
+      }).then(function (r) {
+        if (r.status === 404) { enableDemo(); return fakeLookup(addr); }
+        return r.json().catch(function () { return {}; }).then(function (j) {
+          if (!r.ok) { var e = new Error('http'); e.msg = j.erro; throw e; }
+          if (j.csrf) $('csrf').value = j.csrf;
+          return j;
+        });
+      }, function () { enableDemo(); return fakeLookup(addr); });
+    }
+    function fakeLookup(addr) {
+      return new Promise(function (res) {
+        setTimeout(function () {
+          var n = DEMO_USERS[addr.toLowerCase()];
+          res({ encontrado: !!n, nome: n || '' });
+        }, 700);
+      });
+    }
+    function enableDemo() { demo = true; $('demoNote').hidden = false; }
+    if (demo) $('demoNote').hidden = false;
+
+    function goStep2(addr, nome) {
+      step = 1.5;
+      step1.classList.add('leaving');
+      setTimeout(function () {
+        step = 2;
+        step1.hidden = true; step1.classList.remove('leaving');
+        step2.hidden = false;
+        $('avatar').textContent = initials(nome || addr);
+        $('whoName').textContent = nome || addr.split('@')[0];
+        $('whoEmail').textContent = addr;
+        $('forgot').href = '/esqueci-senha?email=' + encodeURIComponent(addr);
+        setText((nome ? 'Que bom te ver, ' + firstName(nome) + '!' : 'Encontramos sua conta!'),
+                'Agora é só informar sua senha para entrar.');
+        btnIdle.textContent = 'Entrar';
+        pass.value = ''; pass.focus();
+      }, 220);
+    }
+    function goStep1() {
+      step = 1;
+      step2.hidden = true; step1.hidden = false;
+      fPass.classList.remove('invalid'); hideAlert();
+      setText(greeting() + '! 👋', 'Qual é o seu e-mail de acesso?');
+      btnIdle.textContent = 'Continuar';
+      email.focus(); email.select();
+    }
+    $('swap').addEventListener('click', function () {
+      try { localStorage.removeItem('inova.user'); } catch (e) {}
+      goStep1();
+    });
+
+    toggle.addEventListener('click', function () {
+      var show = pass.type === 'password';
+      pass.type = show ? 'text' : 'password';
+      toggle.setAttribute('aria-pressed', String(show));
+      toggle.setAttribute('aria-label', show ? 'Ocultar senha' : 'Mostrar senha');
+      pass.focus();
+    });
+    function checkCaps(e) { if (e.getModifierState) caps.classList.toggle('show', e.getModifierState('CapsLock')); }
+    pass.addEventListener('keydown', checkCaps);
+    pass.addEventListener('keyup', checkCaps);
+    pass.addEventListener('blur', function () { caps.classList.remove('show'); });
+
+    email.addEventListener('input', function () { fEmail.classList.remove('invalid', 'notfound'); hideAlert(); updateSuggest(); });
+    pass.addEventListener('input', function () { fPass.classList.remove('invalid'); hideAlert(); });
+
+    form.addEventListener('submit', function (e) {
+      if (step !== 2) {
+        e.preventDefault();
+        if (step !== 1 || btn.classList.contains('loading')) return;
+        var addr = email.value.trim();
+        if (!validEmail(addr)) { fEmail.classList.add('invalid'); email.focus(); return; }
+        busy(true, 'Procurando sua conta…');
+        lookup(addr).then(function (r) {
+          busy(false);
+          if (r && r.encontrado) { goStep2(addr, r.nome); return; }
+          var s = suggestion(addr);
+          showAlert('Não encontramos nenhuma conta com <b>' + esc(addr) + '</b>. ' +
+            (s ? 'Será que não é <b>' + esc(s) + '</b>?' : 'Confira se digitou certinho ou fale com o administrador do sistema.'));
+          fEmail.classList.add('notfound'); email.focus();
+        }).catch(function (err) {
+          busy(false);
+          showAlert(err && err.msg ? esc(err.msg) : 'Não conseguimos verificar agora. Verifique sua conexão e tente novamente.');
+        });
+        return;
+      }
+
+      if (!pass.value) { e.preventDefault(); fPass.classList.add('invalid'); pass.focus(); return; }
+      try {
+        if ($('remember').checked) localStorage.setItem('inova.user', JSON.stringify({ email: email.value.trim(), nome: $('whoName').textContent }));
+        else localStorage.removeItem('inova.user');
+      } catch (err) {}
+      busy(true, 'Entrando…');
+      if (demo) {
+        e.preventDefault();
+        setTimeout(function () { busy(false); showAlert('Modo demonstração: o login não foi enviado ao servidor.'); }, 900);
+      }
+      // Fora do modo demonstração o formulário segue para o backend (action="/login").
+    });
+
+    // Estado inicial
+    setText(greeting() + '! 👋', 'Qual é o seu e-mail de acesso?');
+    try {
+      var saved = JSON.parse(localStorage.getItem('inova.user') || 'null');
+      if (saved && saved.email) {
+        email.value = saved.email; $('remember').checked = true;
+        lookup(saved.email).then(function (r) { if (r && r.encontrado) goStep2(saved.email, r.nome); }, function () {});
+      }
+    } catch (e) {}
+
+    // Erro vindo do backend: /login?erro=1&email=...
+    var q = new URLSearchParams(location.search);
+    var ERROS = {
+      senha: 'Senha incorreta. Tente novamente ou clique em <b>Esqueci a senha</b>.',
+      bloqueado: 'Muitas tentativas seguidas. Aguarde alguns minutos e tente novamente.',
+      sessao: 'Sua sessão expirou. Informe a senha novamente.'
+    };
+    if (q.get('ok') === 'senha') {
+      var emOk = q.get('email');
+      history.replaceState(null, '', location.pathname);
+      var okMsg = 'Senha alterada com sucesso! Agora é só entrar com a nova senha.';
+      if (emOk) {
+        email.value = emOk;
+        lookup(emOk).then(function (r) {
+          if (r && r.encontrado) goStep2(emOk, r.nome);
+          setTimeout(function () { showAlert(okMsg, true); }, 260);
+        }, function () { showAlert(okMsg, true); });
+      } else { showAlert(okMsg, true); }
+    }
+    if (q.get('erro')) {
+      var em = q.get('email'), msg = ERROS[q.get('erro')] || ERROS.senha;
+      history.replaceState(null, '', location.pathname);
+      if (em) {
+        email.value = em;
+        lookup(em).then(function (r) {
+          if (r && r.encontrado) goStep2(em, r.nome);
+          setTimeout(function () { showAlert(msg); }, 260);
+        }, function (err) { showAlert(err && err.msg ? esc(err.msg) : msg); });
+      } else { showAlert(msg); }
+    }
+  })();
+</script>
+</body>
+</html>

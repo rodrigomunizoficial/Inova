@@ -1,0 +1,60 @@
+name: Deploy (FTP)
+
+# Envia o site para a hospedagem por FTP automaticamente a cada alteração no
+# branch main. Também pode ser disparado à mão em Actions > Deploy (FTP) > Run workflow.
+# Enquanto os segredos abaixo não forem cadastrados, o envio é pulado (sem erro).
+#
+# Segredos necessários (Settings > Secrets and variables > Actions):
+#   FTP_SERVER    ex.: ftp.inovasaude.com.br
+#   FTP_USERNAME  usuário FTP do cPanel
+#   FTP_PASSWORD  senha desse usuário
+#   FTP_DIR       pasta de destino, terminando em "/" (ex.: public_html/ ou public_html/sistema/)
+#
+# Arquivos que já existem no servidor e não fazem parte deste repositório não são apagados.
+# inc/config.php não está no Git: crie-o uma vez direto no servidor.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verificar PHP
+        run: for f in $(git ls-files '*.php'); do php -l "$f"; done
+
+      - name: Conferir segredos do FTP
+        id: cfg
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_DIR: ${{ secrets.FTP_DIR }}
+        run: |
+          if [ -z "$FTP_SERVER" ] || [ -z "$FTP_DIR" ]; then
+            echo "::warning::Deploy pulado: cadastre FTP_SERVER, FTP_USERNAME, FTP_PASSWORD e FTP_DIR em Settings > Secrets and variables > Actions."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Enviar por FTP
+        if: steps.cfg.outputs.ok == 'true'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_DIR }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .github/**
+            README.md
+            inc/config.php

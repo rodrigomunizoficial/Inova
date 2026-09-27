@@ -1,0 +1,20 @@
+Options -Indexes
+DirectoryIndex index.html
+
+RewriteEngine On
+
+# /login: GET mostra a tela, POST envia para login.php
+RewriteCond %{REQUEST_METHOD} POST
+RewriteRule ^login/?$ login.php [L]
+RewriteRule ^login/?$ index.html [L]
+
+# /api/verificar-email → api/verificar-email.php
+RewriteRule ^api/verificar-email/?$ api/verificar-email.php [L]
+
+# Recuperação de senha
+RewriteRule ^esqueci-senha/?$ esqueci-senha.php [L,QSA]
+RewriteRule ^redefinir-senha/?$ redefinir-senha.php [L,QSA]
+
+# Bloqueia acesso direto a arquivos internos
+RewriteRule ^inc/ - [F,L]
+RewriteRule ^(schema\.sql|criar-usuario\.php|README\.md)$ - [F,L]
