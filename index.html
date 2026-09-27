@@ -445,6 +445,7 @@
       <p class="sub" id="subtitle">Qual é o seu e-mail de acesso?</p>
 
       <form id="loginForm" method="post" action="/login" novalidate>
+        <input type="hidden" name="_csrf" id="csrf">
         <div class="alert" id="alert" role="alert">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
           <span id="alertText"></span>
@@ -610,9 +611,12 @@
         method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         credentials: 'same-origin', body: JSON.stringify({ email: addr })
       }).then(function (r) {
-        if (r.status === 404 || r.status === 405) { enableDemo(); return fakeLookup(addr); }
-        if (!r.ok) throw new Error('http');
-        return r.json();
+        if (r.status === 404) { enableDemo(); return fakeLookup(addr); }
+        return r.json().catch(function () { return {}; }).then(function (j) {
+          if (!r.ok) { var e = new Error('http'); e.msg = j.erro; throw e; }
+          if (j.csrf) $('csrf').value = j.csrf;
+          return j;
+        });
       }, function () { enableDemo(); return fakeLookup(addr); });
     }
     function fakeLookup(addr) {
@@ -684,9 +688,9 @@
           showAlert('Não encontramos nenhuma conta com <b>' + esc(addr) + '</b>. ' +
             (s ? 'Será que não é <b>' + esc(s) + '</b>?' : 'Confira se digitou certinho ou fale com o administrador do sistema.'));
           fEmail.classList.add('notfound'); email.focus();
-        }).catch(function () {
+        }).catch(function (err) {
           busy(false);
-          showAlert('Não conseguimos verificar agora. Verifique sua conexão e tente novamente.');
+          showAlert(err && err.msg ? esc(err.msg) : 'Não conseguimos verificar agora. Verifique sua conexão e tente novamente.');
         });
         return;
       }
@@ -708,15 +712,29 @@
     setText(greeting() + '! 👋', 'Qual é o seu e-mail de acesso?');
     try {
       var saved = JSON.parse(localStorage.getItem('inova.user') || 'null');
-      if (saved && saved.email) { email.value = saved.email; $('remember').checked = true; goStep2(saved.email, saved.nome); }
+      if (saved && saved.email) {
+        email.value = saved.email; $('remember').checked = true;
+        lookup(saved.email).then(function (r) { if (r && r.encontrado) goStep2(saved.email, r.nome); }, function () {});
+      }
     } catch (e) {}
 
     // Erro vindo do backend: /login?erro=1&email=...
     var q = new URLSearchParams(location.search);
+    var ERROS = {
+      senha: 'Senha incorreta. Tente novamente ou clique em <b>Esqueci a senha</b>.',
+      bloqueado: 'Muitas tentativas seguidas. Aguarde alguns minutos e tente novamente.',
+      sessao: 'Sua sessão expirou. Informe a senha novamente.'
+    };
     if (q.get('erro')) {
-      var em = q.get('email');
-      if (em) { email.value = em; goStep2(em, ''); }
-      setTimeout(function () { showAlert('Senha incorreta. Tente novamente ou clique em <b>Esqueci a senha</b>.'); }, 260);
+      var em = q.get('email'), msg = ERROS[q.get('erro')] || ERROS.senha;
+      history.replaceState(null, '', location.pathname);
+      if (em) {
+        email.value = em;
+        lookup(em).then(function (r) {
+          if (r && r.encontrado) goStep2(em, r.nome);
+          setTimeout(function () { showAlert(msg); }, 260);
+        }, function (err) { showAlert(err && err.msg ? esc(err.msg) : msg); });
+      } else { showAlert(msg); }
     }
   })();
 </script>
