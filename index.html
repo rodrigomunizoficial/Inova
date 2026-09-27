@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entrar · InovaSaúde</title>
+<meta name="description" content="InovaSaúde — tecnologia a serviço da vida. Acesse o sistema.">
+<meta name="theme-color" content="#0b0b1a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #07071a;
+    --bg-2: #0d0d24;
+    --card: rgba(20, 20, 44, .62);
+    --card-border: rgba(255, 255, 255, .08);
+    --field: rgba(255, 255, 255, .04);
+    --field-border: rgba(255, 255, 255, .10);
+    --field-focus: #7c6cff;
+    --text: #f4f4fb;
+    --muted: #9a9ab8;
+    --faint: #6b6b8a;
+    --indigo: #6c5cff;
+    --violet: #8b5cf6;
+    --cyan: #3fd4f0;
+    --teal: #2ee6b8;
+    --danger: #ff6b8a;
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ---------- Fundo animado ---------- */
+  .backdrop { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  .blob {
+    position: absolute; border-radius: 50%; filter: blur(90px); opacity: .55;
+    animation: float 18s ease-in-out infinite;
+  }
+  .blob.b1 { width: 560px; height: 560px; background: #4b3bff; top: -180px; left: -140px; }
+  .blob.b2 { width: 480px; height: 480px; background: #0fb5d6; bottom: -200px; right: -120px; animation-delay: -6s; opacity: .35; }
+  .blob.b3 { width: 360px; height: 360px; background: #9b4dff; top: 40%; left: 45%; animation-delay: -12s; opacity: .25; }
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(40px, -30px) scale(1.06); }
+    66% { transform: translate(-30px, 30px) scale(.96); }
+  }
+  .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+  }
+
+  /* ---------- Layout ---------- */
+  .shell {
+    position: relative; z-index: 1;
+    min-height: 100vh; min-height: 100dvh;
+    display: grid; grid-template-columns: 1.1fr 1fr;
+  }
+
+  /* ---------- Painel da marca ---------- */
+  .showcase {
+    position: relative;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 56px 64px;
+  }
+  .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; color: inherit; }
+  .brand svg { flex: none; filter: drop-shadow(0 10px 24px rgba(108, 92, 255, .45)); }
+  .brand-name { font-weight: 800; font-size: 22px; letter-spacing: .02em; line-height: 1; }
+  .brand-name span {
+    background: linear-gradient(90deg, var(--cyan), var(--teal));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .brand-tag {
+    display: block; margin-top: 6px; font-size: 13px; font-weight: 600;
+    background: linear-gradient(90deg, #a5b4ff, #c4a8ff);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  .hero { max-width: 520px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 7px 14px 7px 10px; border-radius: 999px;
+    background: rgba(63, 212, 240, .08); border: 1px solid rgba(63, 212, 240, .22);
+    color: #9deaf8; font-size: 12.5px; font-weight: 600; letter-spacing: .02em;
+  }
+  .pill .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--teal);
+    box-shadow: 0 0 0 0 rgba(46, 230, 184, .7); animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(46, 230, 184, .6); }
+    70% { box-shadow: 0 0 0 10px rgba(46, 230, 184, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(46, 230, 184, 0); }
+  }
+  .hero h1 {
+    margin-top: 22px; font-size: clamp(34px, 3.6vw, 50px); line-height: 1.08;
+    font-weight: 800; letter-spacing: -.03em;
+  }
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(100deg, #8f83ff 0%, var(--cyan) 60%, var(--teal) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero p { margin-top: 18px; color: var(--muted); font-size: 16.5px; line-height: 1.65; max-width: 460px; }
+
+  .ecg { margin-top: 36px; width: 100%; max-width: 480px; height: 70px; }
+  .ecg path {
+    fill: none; stroke: url(#ecgGrad); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
+    stroke-dasharray: 900; stroke-dashoffset: 900; animation: draw 3.2s ease-in-out infinite;
+    filter: drop-shadow(0 0 6px rgba(63, 212, 240, .6));
+  }
+  @keyframes draw {
+    0% { stroke-dashoffset: 900; opacity: 0; }
+    10% { opacity: 1; }
+    70% { stroke-dashoffset: 0; opacity: 1; }
+    100% { stroke-dashoffset: 0; opacity: 0; }
+  }
+
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 36px; max-width: 540px; }
+  .feature {
+    padding: 16px; border-radius: 14px;
+    background: rgba(255, 255, 255, .03); border: 1px solid rgba(255, 255, 255, .06);
+    backdrop-filter: blur(6px);
+  }
+  .feature .ic {
+    width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
+    background: linear-gradient(135deg, rgba(108, 92, 255, .25), rgba(63, 212, 240, .18));
+    color: #b9b2ff; margin-bottom: 12px;
+  }
+  .feature strong { display: block; font-size: 14px; font-weight: 700; }
+  .feature small { display: block; margin-top: 4px; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+
+  .showcase footer { color: var(--faint); font-size: 12.5px; }
+
+  /* ---------- Painel do formulário ---------- */
+  .panel { display: flex; align-items: center; justify-content: center; padding: 40px 32px; }
+  .card {
+    position: relative; width: 100%; max-width: 440px;
+    padding: 44px 40px 32px;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 28px;
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    box-shadow:
+      0 30px 80px -20px rgba(0, 0, 0, .65),
+      inset 0 1px 0 rgba(255, 255, 255, .06);
+    animation: rise .7s cubic-bezier(.2, .8, .2, 1) both;
+  }
+  .card::before {
+    content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px;
+    background: linear-gradient(140deg, rgba(124, 108, 255, .7), transparent 35%, transparent 65%, rgba(63, 212, 240, .5));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none;
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px) scale(.985); } to { opacity: 1; transform: none; } }
+
+  .card .brand.mobile { display: none; justify-content: center; margin-bottom: 28px; }
+
+  .card h2 { font-size: 28px; font-weight: 800; letter-spacing: -.02em; }
+  .card .sub { margin-top: 8px; color: var(--muted); font-size: 15px; }
+
+  form { margin-top: 30px; display: grid; gap: 18px; }
+  .field label {
+    display: block; margin-bottom: 8px;
+    font-size: 13px; font-weight: 600; color: #c9c9e0;
+  }
+  .control { position: relative; }
+  .control .lead {
+    position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+    color: var(--faint); transition: color .2s; pointer-events: none;
+  }
+  .control input {
+    width: 100%; height: 54px;
+    padding: 0 48px 0 46px;
+    font: inherit; font-size: 15px; color: var(--text);
+    background: var(--field); border: 1px solid var(--field-border); border-radius: 14px;
+    outline: none; transition: border-color .2s, box-shadow .2s, background .2s;
+  }
+  .control input::placeholder { color: #5c5c7a; }
+  .control input:hover { border-color: rgba(255, 255, 255, .18); }
+  .control input:focus {
+    border-color: var(--field-focus); background: rgba(124, 108, 255, .06);
+    box-shadow: 0 0 0 4px rgba(124, 108, 255, .18);
+  }
+  .control:focus-within .lead { color: #a99fff; }
+  .control input:-webkit-autofill {
+    -webkit-text-fill-color: var(--text);
+    -webkit-box-shadow: 0 0 0 100px #1a1a36 inset;
+    caret-color: var(--text);
+  }
+  .field.invalid input { border-color: var(--danger); box-shadow: 0 0 0 4px rgba(255, 107, 138, .14); }
+  .field .err { display: none; margin-top: 7px; font-size: 12.5px; color: var(--danger); }
+  .field.invalid .err { display: block; }
+
+  .toggle {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    width: 38px; height: 38px; border-radius: 10px; border: 0; background: transparent;
+    color: var(--faint); cursor: pointer; display: grid; place-items: center; transition: color .2s, background .2s;
+  }
+  .toggle:hover { color: var(--text); background: rgba(255, 255, 255, .06); }
+  .toggle .off { display: none; }
+  .toggle[aria-pressed="true"] .on { display: none; }
+  .toggle[aria-pressed="true"] .off { display: block; }
+
+  .caps { display: none; margin-top: 7px; font-size: 12.5px; color: #ffc46b; align-items: center; gap: 6px; }
+  .caps.show { display: flex; }
+
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: -2px; }
+  .check { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; color: #c9c9e0; user-select: none; }
+  .check input { position: absolute; opacity: 0; pointer-events: none; }
+  .check .box {
+    width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid rgba(255, 255, 255, .22);
+    display: grid; place-items: center; transition: all .2s;
+  }
+  .check .box svg { opacity: 0; transform: scale(.6); transition: all .2s; }
+  .check input:checked + .box { background: linear-gradient(135deg, var(--indigo), var(--violet)); border-color: transparent; }
+  .check input:checked + .box svg { opacity: 1; transform: none; }
+  .check input:focus-visible + .box { box-shadow: 0 0 0 4px rgba(124, 108, 255, .3); }
+  .link { color: #a99fff; font-size: 14px; font-weight: 600; text-decoration: none; transition: color .2s; }
+  .link:hover { color: #cfc9ff; text-decoration: underline; text-underline-offset: 3px; }
+
+  .submit {
+    position: relative; overflow: hidden; margin-top: 6px;
+    height: 56px; border: 0; border-radius: 14px; cursor: pointer;
+    font: inherit; font-size: 16px; font-weight: 700; color: #fff; letter-spacing: .01em;
+    background: linear-gradient(100deg, #6c5cff 0%, #7b5cff 45%, #3aa8f0 100%);
+    background-size: 160% 100%; background-position: 0 0;
+    box-shadow: 0 14px 34px -10px rgba(108, 92, 255, .75), inset 0 1px 0 rgba(255, 255, 255, .2);
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: transform .15s, box-shadow .25s, background-position .5s;
+  }
+  .submit:hover { background-position: 100% 0; box-shadow: 0 18px 40px -10px rgba(63, 168, 240, .7), inset 0 1px 0 rgba(255, 255, 255, .25); }
+  .submit:active { transform: translateY(1px) scale(.995); }
+  .submit:focus-visible { outline: none; box-shadow: 0 0 0 4px rgba(124, 108, 255, .4); }
+  .submit::after {
+    content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .28), transparent);
+    transform: skewX(-20deg); transition: left .7s;
+  }
+  .submit:hover::after { left: 130%; }
+  .submit .arrow { transition: transform .25s; }
+  .submit:hover .arrow { transform: translateX(4px); }
+  .submit .spinner { display: none; width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid rgba(255,255,255,.35); border-top-color: #fff; animation: spin .7s linear infinite; }
+  .submit.loading { pointer-events: none; }
+  .submit.loading .spinner { display: block; }
+  .submit.loading .arrow, .submit.loading .label-idle { display: none; }
+  .submit .label-busy { display: none; }
+  .submit.loading .label-busy { display: inline; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .alert {
+    display: none; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 12px;
+    background: rgba(255, 107, 138, .08); border: 1px solid rgba(255, 107, 138, .28); color: #ffc2cf; font-size: 13.5px; line-height: 1.45;
+  }
+  .alert.show { display: flex; animation: shake .4s; }
+  @keyframes shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+
+  .divider {
+    display: flex; align-items: center; gap: 14px; margin: 30px 0 18px;
+    color: var(--faint); font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+  }
+  .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent); }
+
+  .roles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .role {
+    display: flex; align-items: center; gap: 10px; min-width: 0;
+    padding: 10px 12px; border-radius: 14px;
+    background: rgba(255, 255, 255, .025); border: 1px solid rgba(255, 255, 255, .06);
+    color: var(--muted); font-size: 13px; font-weight: 600;
+    transition: all .2s;
+  }
+  .role:hover { color: var(--text); border-color: rgba(124, 108, 255, .4); background: rgba(124, 108, 255, .08); transform: translateY(-2px); }
+  .role .ic { flex: none; width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; }
+  .role:nth-child(1) .ic { background: rgba(108, 92, 255, .16); color: #a99fff; }
+  .role:nth-child(2) .ic { background: rgba(63, 212, 240, .14); color: #7fe3f7; }
+  .role:nth-child(3) .ic { background: rgba(46, 230, 184, .14); color: #6ff0cc; }
+  .role:nth-child(4) .ic { background: rgba(255, 170, 90, .14); color: #ffc58f; }
+
+  .secure { margin-top: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--faint); font-size: 12.5px; }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* ---------- Responsivo ---------- */
+  @media (max-width: 1080px) {
+    .showcase { padding: 44px 40px; }
+    .features { grid-template-columns: 1fr; max-width: 360px; }
+  }
+  @media (max-width: 880px) {
+    .shell { grid-template-columns: 1fr; }
+    .showcase { display: none; }
+    .card .brand.mobile { display: flex; }
+    .panel { padding: 32px 16px; }
+  }
+  @media (max-width: 420px) {
+    .card { padding: 34px 22px 26px; border-radius: 22px; }
+    .card h2 { font-size: 25px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .ecg path { stroke-dashoffset: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="backdrop" aria-hidden="true">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <div class="grid"></div>
+</div>
+
+<!-- Logo reutilizável -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="logoBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7b6bff"/>
+      <stop offset=".55" stop-color="#5b4bff"/>
+      <stop offset="1" stop-color="#2fb8e8"/>
+    </linearGradient>
+    <linearGradient id="ecgGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#6c5cff" stop-opacity="0"/>
+      <stop offset=".25" stop-color="#8f83ff"/>
+      <stop offset=".7" stop-color="#3fd4f0"/>
+      <stop offset="1" stop-color="#2ee6b8" stop-opacity="0"/>
+    </linearGradient>
+    <symbol id="logo" viewBox="0 0 56 56">
+      <rect width="56" height="56" rx="15" fill="url(#logoBg)"/>
+      <rect x=".5" y=".5" width="55" height="55" rx="14.5" fill="none" stroke="#fff" stroke-opacity=".22"/>
+      <path d="M22 12h12a2 2 0 0 1 2 2v8h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8v8a2 2 0 0 1-2 2H22a2 2 0 0 1-2-2v-8h-8a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h8v-8a2 2 0 0 1 2-2z" fill="#fff"/>
+      <path d="M6 40h8l3-6 4 11 3-5h26" fill="none" stroke="#9ff0ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="45" cy="11" r="2.2" fill="#c8f6ff"/>
+    </symbol>
+  </defs>
+</svg>
+
+<main class="shell">
+
+  <!-- Painel institucional -->
+  <section class="showcase" aria-label="InovaSaúde">
+    <a class="brand" href="/" aria-label="InovaSaúde — página inicial">
+      <svg width="52" height="52"><use href="#logo"/></svg>
+      <div>
+        <div class="brand-name">INOVA<span>SAÚDE</span></div>
+        <span class="brand-tag">tecnologia a serviço da vida</span>
+      </div>
+    </a>
+
+    <div class="hero">
+      <span class="pill"><span class="dot"></span> Plataforma online e segura</span>
+      <h1>Cuidar de pessoas com a <em>inteligência</em> que a saúde merece.</h1>
+      <p>Prontuários, agenda, equipe e indicadores reunidos em um só lugar — para que você dedique mais tempo ao que realmente importa: seus pacientes.</p>
+
+      <svg class="ecg" viewBox="0 0 480 70" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 40 H120 L135 40 L145 22 L158 58 L172 8 L186 62 L198 40 H260 L272 30 L284 40 H340 L352 40 L360 26 L372 54 L384 16 L396 40 H480"/>
+      </svg>
+
+      <div class="features">
+        <div class="feature">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <strong>Dados protegidos</strong>
+          <small>Criptografia e conformidade com a LGPD.</small>
+        </div>
+        <div class="feature">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+          <strong>Agenda inteligente</strong>
+          <small>Consultas e retornos organizados.</small>
+        </div>
+        <div class="feature">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></div>
+          <strong>Indicadores</strong>
+          <small>Decisões guiadas por dados reais.</small>
+        </div>
+      </div>
+    </div>
+
+    <footer>© <span id="year">2026</span> InovaSaúde · Todos os direitos reservados</footer>
+  </section>
+
+  <!-- Formulário -->
+  <section class="panel">
+    <div class="card">
+      <a class="brand mobile" href="/" aria-label="InovaSaúde — página inicial">
+        <svg width="48" height="48"><use href="#logo"/></svg>
+        <div>
+          <div class="brand-name">INOVA<span>SAÚDE</span></div>
+          <span class="brand-tag">tecnologia a serviço da vida</span>
+        </div>
+      </a>
+
+      <h2>Bem-vindo de volta 👋</h2>
+      <p class="sub">Entre com suas credenciais para acessar o sistema.</p>
+
+      <form id="loginForm" method="post" action="/login" novalidate>
+        <div class="alert" id="alert" role="alert">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          <span id="alertText">E-mail ou senha incorretos.</span>
+        </div>
+
+        <div class="field" id="fEmail">
+          <label for="email">E-mail</label>
+          <div class="control">
+            <svg class="lead" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m22 7-10 6L2 7"/></svg>
+            <input id="email" name="email" type="email" inputmode="email" autocomplete="username" placeholder="seu@email.com.br" required autofocus>
+          </div>
+          <span class="err">Informe um e-mail válido.</span>
+        </div>
+
+        <div class="field" id="fPass">
+          <label for="password">Senha</label>
+          <div class="control">
+            <svg class="lead" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            <input id="password" name="password" type="password" autocomplete="current-password" placeholder="••••••••" required>
+            <button type="button" class="toggle" id="togglePass" aria-label="Mostrar senha" aria-pressed="false">
+              <svg class="on" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="off" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.9 17.9A10.4 10.4 0 0 1 12 19c-6.5 0-10-7-10-7a18.5 18.5 0 0 1 5.1-5.9M9.9 5.2A9.1 9.1 0 0 1 12 5c6.5 0 10 7 10 7a18.6 18.6 0 0 1-2.2 3.2M14.1 14.1a3 3 0 1 1-4.2-4.2M2 2l20 20"/></svg>
+            </button>
+          </div>
+          <span class="err">Informe sua senha.</span>
+          <span class="caps" id="caps">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 8 9h-5v6H9v-6H4z"/></svg>
+            Caps Lock está ativado
+          </span>
+        </div>
+
+        <div class="row">
+          <label class="check">
+            <input type="checkbox" name="remember" id="remember">
+            <span class="box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg></span>
+            Lembrar de mim
+          </label>
+          <a class="link" href="/esqueci-senha">Esqueci a senha</a>
+        </div>
+
+        <button type="submit" class="submit" id="submitBtn">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="label-idle">Entrar</span>
+          <span class="label-busy">Entrando…</span>
+          <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </form>
+
+      <div class="divider">Perfis do sistema</div>
+      <div class="roles">
+        <div class="role">
+          <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+          Administrador
+        </div>
+        <div class="role">
+          <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v6a6 6 0 0 0 12 0V3"/><path d="M12 15v2a4 4 0 0 0 8 0v-3"/><circle cx="20" cy="12" r="2"/></svg></span>
+          Médico
+        </div>
+        <div class="role">
+          <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21.2l8.8-8.8a5.5 5.5 0 0 0 0-7.8z"/></svg></span>
+          Enfermagem
+        </div>
+        <div class="role">
+          <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>
+          Recepção
+        </div>
+      </div>
+
+      <div class="secure">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        Conexão segura · seus dados estão protegidos
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  (function () {
+    var form = document.getElementById('loginForm');
+    var email = document.getElementById('email');
+    var pass = document.getElementById('password');
+    var toggle = document.getElementById('togglePass');
+    var caps = document.getElementById('caps');
+    var btn = document.getElementById('submitBtn');
+    var alertBox = document.getElementById('alert');
+    var fEmail = document.getElementById('fEmail');
+    var fPass = document.getElementById('fPass');
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Lembrar e-mail
+    try {
+      var saved = localStorage.getItem('inova.email');
+      if (saved) { email.value = saved; document.getElementById('remember').checked = true; pass.focus(); }
+    } catch (e) {}
+
+    toggle.addEventListener('click', function () {
+      var show = pass.type === 'password';
+      pass.type = show ? 'text' : 'password';
+      toggle.setAttribute('aria-pressed', String(show));
+      toggle.setAttribute('aria-label', show ? 'Ocultar senha' : 'Mostrar senha');
+      pass.focus();
+    });
+
+    function checkCaps(e) {
+      if (e.getModifierState) caps.classList.toggle('show', e.getModifierState('CapsLock'));
+    }
+    pass.addEventListener('keydown', checkCaps);
+    pass.addEventListener('keyup', checkCaps);
+    pass.addEventListener('blur', function () { caps.classList.remove('show'); });
+
+    email.addEventListener('input', function () { fEmail.classList.remove('invalid'); alertBox.classList.remove('show'); });
+    pass.addEventListener('input', function () { fPass.classList.remove('invalid'); alertBox.classList.remove('show'); });
+
+    form.addEventListener('submit', function (e) {
+      var ok = true;
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) { fEmail.classList.add('invalid'); ok = false; }
+      if (!pass.value) { fPass.classList.add('invalid'); ok = false; }
+      if (!ok) { e.preventDefault(); (fEmail.classList.contains('invalid') ? email : pass).focus(); return; }
+
+      try {
+        if (document.getElementById('remember').checked) localStorage.setItem('inova.email', email.value.trim());
+        else localStorage.removeItem('inova.email');
+      } catch (err) {}
+
+      btn.classList.add('loading');
+      // O envio segue normalmente para o backend (action="/login").
+    });
+
+    // Exibe erro vindo do backend: /login?erro=1
+    if (/[?&]erro=/.test(location.search)) alertBox.classList.add('show');
+  })();
+</script>
+</body>
+</html>
