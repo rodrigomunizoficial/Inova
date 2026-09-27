@@ -613,7 +613,7 @@
         method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         credentials: 'same-origin', body: JSON.stringify({ email: addr })
       }).then(function (r) {
-        if (r.status === 404) { enableDemo(); return fakeLookup(addr); }
+        if (r.status === 404 || r.status === 405) { enableDemo(); return fakeLookup(addr); }
         return r.json().catch(function () { return {}; }).then(function (j) {
           if (!r.ok) { var e = new Error('http'); e.msg = j.erro; throw e; }
           if (j.csrf) $('csrf').value = j.csrf;
